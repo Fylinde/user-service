@@ -5,3 +5,16 @@ pydantic
 psycopg2-binary
 passlib[bcrypt]
 python-dotenv
+pytest
+requests
+alembic
+PyJWT
+python-jose
+typing-extensions
+asyncpg
+aiosqlite
+asgiref
+email-validator
+pyotp
+python-jose
+PyJWT
