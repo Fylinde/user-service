@@ -18,3 +18,5 @@ email-validator
 pyotp
 python-jose
 PyJWT
+pika
+SQLAlchemy-Utils

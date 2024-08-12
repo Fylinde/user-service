@@ -6,6 +6,8 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
+    username: str
+    email: EmailStr
     password: str
     profile_picture: Optional[str] = None
     preferences: Optional[str] = None
@@ -17,6 +19,7 @@ class UserRead(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True  # Ensure this is set to True to enable from_orm functionality
 
 class UserUpdate(BaseModel):
     username: Optional[str]

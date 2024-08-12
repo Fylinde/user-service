@@ -37,29 +37,26 @@ router = APIRouter()
 
 @router.post("/", response_model=UserRead)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    logger.info("Received request to create user")
-    db_user = db.query(UserModel).filter(UserModel.email == user.email).first()
-    if db_user:
-        logger.error("Email already registered")
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    db_user = db.query(UserModel).filter(UserModel.username == user.username).first()
-    if db_user:
-        logger.error("Username already registered")
-        raise HTTPException(status_code=400, detail="Username already registered")
-    
-    hashed_password = get_password_hash(user.password)
+    try:
+        user_data = user.dict()
+        return create_user_in_database(user_data, db)
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while creating the user")
+
+def create_user_in_database(user_data: dict, db: Session):
     new_user = UserModel(
-        username=user.username,
-        email=user.email,
-        hashed_password=hashed_password,
+        username=user_data['username'],
+        email=user_data['email'],
+        hashed_password=user_data['password'],  # This should be the hashed password
+        profile_picture=user_data.get('profile_picture'),
+        preferences=user_data.get('preferences')
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    
-    logger.info(f"Created user: {new_user}")
-
     return new_user
 
 @router.get("/{user_id}", response_model=UserRead)
