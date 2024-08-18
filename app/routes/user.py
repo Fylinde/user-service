@@ -35,29 +35,7 @@ def get_password_hash(password: str) -> str:
 # Create and include the router
 router = APIRouter()
 
-@router.post("/", response_model=UserRead)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    try:
-        user_data = user.dict()
-        return create_user_in_database(user_data, db)
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        raise HTTPException(status_code=500, detail="An error occurred while creating the user")
 
-def create_user_in_database(user_data: dict, db: Session):
-    new_user = UserModel(
-        username=user_data['username'],
-        email=user_data['email'],
-        hashed_password=user_data['password'],  # This should be the hashed password
-        profile_picture=user_data.get('profile_picture'),
-        preferences=user_data.get('preferences')
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
 
 @router.get("/{user_id}", response_model=UserRead)
 def read_user(user_id: int, db: Session = Depends(get_db)):

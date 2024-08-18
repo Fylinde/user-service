@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class WishlistBase(BaseModel):
     product_id: int
@@ -12,7 +11,13 @@ class WishlistInDBBase(WishlistBase):
     id: int
 
     class Config:
-        orm_mode = True  # This was changed to orm_mode as Pydantic v2 is compatible with this.
+        from_attributes = True  # For Pydantic v2 compatibility
 
 class WishlistRead(WishlistInDBBase):
     pass
+
+class WishlistResponse(WishlistInDBBase):
+    pass
+
+    class Config:
+        from_attributes = True  # For Pydantic v2 compatibility

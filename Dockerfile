@@ -2,6 +2,8 @@ FROM python:3.9
 
 WORKDIR /app
 
+ENV PYTHONPATH=/app
+
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip 
 

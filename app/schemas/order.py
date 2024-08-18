@@ -1,4 +1,3 @@
-# schemas/order.py
 from pydantic import BaseModel
 from typing import Optional
 
@@ -17,7 +16,13 @@ class OrderInDBBase(OrderBase):
     product_id: int
 
     class Config:
-        from_attributes = True  # Update this line for Pydantic v2
+        from_attributes = True  # For Pydantic v2 compatibility
 
 class Order(OrderInDBBase):
     pass
+
+class OrderResponse(OrderInDBBase):
+    quantity: int
+
+    class Config:
+        from_attributes = True  # For Pydantic v2 compatibility
