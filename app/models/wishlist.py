@@ -7,7 +7,7 @@ class WishlistModel(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
-    product_id = Column(Integer, ForeignKey('products.id'))
+    product_id = Column(Integer, nullable=True)
 
     user = relationship("UserModel", back_populates="wishlists")
-    product = relationship("ProductModel", back_populates="wishlists")
+   

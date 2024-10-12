@@ -18,13 +18,22 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.models.order import OrderModel  # Ensure 'Base' is correctly imported from your models
+#from app.models.order import OrderModel  # Ensure 'Base' is correctly imported from your models
 from app.database import BaseModel
 from app.models.vendor import VendorModel
-from app.models.product import ProductModel
 from app.models.review import ReviewModel
 from app.models.wishlist import WishlistModel
 from app.models.user import UserModel
+from app.models.group import GroupModel
+from app.models.customer_events import CustomerEventModel
+from app.models.customer_notes import CustomerNoteModel
+from app.models.permissions import PermissionModel
+from app.models.association_tables import group_permissions, user_groups  # Include association tables
+from app.models.staff import StaffNotificationRecipientModel
+from app.models.notification import NotificationModel
+from app.models.ai_recommendation import AIRecommendationModel
+
+
 target_metadata = BaseModel.metadata
 
 

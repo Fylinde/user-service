@@ -17,6 +17,10 @@ asgiref
 email-validator
 pyotp
 python-jose
-PyJWT
 pika
 SQLAlchemy-Utils
+itsdangerous
+werkzeug
+apscheduler
+bcrypt
+password-validator

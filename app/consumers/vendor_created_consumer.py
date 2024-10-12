@@ -50,6 +50,7 @@ def vendor_callback(ch, method, properties, body):
         logger.error(f"Error processing vendor_created message: {str(e)}")
 
 def start_vendor_consuming():
+    logger.info('Connecting to RabbitMQ for vendor creation messages')
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='rabbitmq')
     )
@@ -57,15 +58,14 @@ def start_vendor_consuming():
 
     # Declare the fanout exchange
     channel.exchange_declare(exchange='vendor_events', exchange_type='fanout')
+    logger.info('Declared exchange vendor_events')
 
     # Declare a unique queue for this consumer and bind it to the exchange
     queue_name = channel.queue_declare(queue='', exclusive=True).method.queue
-    logger.info(f"Declared queue {queue_name} and binding it to vendor_events exchange")
     channel.queue_bind(exchange='vendor_events', queue=queue_name)
+    logger.info('Waiting for vendor messages in user-service. To exit press CTRL+C')
 
     channel.basic_consume(
         queue=queue_name, on_message_callback=vendor_callback, auto_ack=True
     )
-
-    logger.info('Waiting for vendor messages. To exit press CTRL+C')
     channel.start_consuming()
