@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.user import UserModel
-from app.schemas.user import UserCreate, UserUpdate
+from app.schemas.user import UserUpdate
 from app.models.notification import NotificationModel
 from app.models.ai_recommendation import AIRecommendationModel
 from uuid import uuid4
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import HTTPException
 from app.security import get_password_hash
 import pyotp

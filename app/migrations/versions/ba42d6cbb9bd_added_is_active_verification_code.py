@@ -6,7 +6,7 @@ Create Date: 2024-09-08 11:38:11.600125
 
 """
 from alembic import op
-import sqlalchemy as sa
+
 
 
 # revision identifiers, used by Alembic.
@@ -17,12 +17,64 @@ depends_on = None
 
 
 def upgrade():
-    # Manually add the columns to the users table
-    op.add_column('users', sa.Column('is_active', sa.Boolean(), nullable=False, server_default=sa.text('true')))
-    op.add_column('users', sa.Column('verification_code', sa.String(), nullable=True))
+    # Add the is_active column if it doesn't already exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' 
+            AND column_name = 'is_active'
+        ) THEN
+            ALTER TABLE users ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT TRUE;
+        END IF;
+    END $$;
+    """)
+
+    # Add the verification_code column if it doesn't already exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' 
+            AND column_name = 'verification_code'
+        ) THEN
+            ALTER TABLE users ADD COLUMN verification_code VARCHAR;
+        END IF;
+    END $$;
+    """)
 
 
 def downgrade():
-    # Drop the columns in case of downgrade
-    op.drop_column('users', 'is_active')
-    op.drop_column('users', 'verification_code')
+    # Drop the is_active column if it exists
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' 
+            AND column_name = 'is_active'
+        ) THEN
+            ALTER TABLE users DROP COLUMN is_active;
+        END IF;
+    END $$;
+    """)
+
+    # Drop the verification_code column if it exists
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' 
+            AND column_name = 'verification_code'
+        ) THEN
+            ALTER TABLE users DROP COLUMN verification_code;
+        END IF;
+    END $$;
+    """)

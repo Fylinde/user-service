@@ -1,7 +1,7 @@
 import secrets
 import random
 import string
-from app.models.user import UserModel
+
 
 def create_session_token() -> str:
     return secrets.token_hex(16)

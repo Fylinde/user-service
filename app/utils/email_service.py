@@ -3,7 +3,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import logging
 from itsdangerous import URLSafeTimedSerializer
-import uuid
+
 from app.config import settings
 
 # Initialize the URLSafeTimedSerializer with a secret key
@@ -53,13 +53,15 @@ def send_reset_email(to_email: str, reset_token: str):
     send_email(to_email, subject, message_body)
 
 def send_verification_email(to_email, verification_code):
-    verification_link = f"http://localhost:8000/auth/user/verify?code={verification_code}"
+    # Add redirect=true to the verification link
+    verification_link = f"http://localhost:8000/auth/verify?code={verification_code}&redirect=true"
     message_body = (
         f"Please verify your email by clicking on the following link: {verification_link}\n\n"
         f"Alternatively, you can enter the following verification code on the verification form: {verification_code}"
     )
     subject = "Email Verification"
     send_email(to_email, subject, message_body)
+
 
 
 def send_otp_via_email(to_email: str, otp_code: str):

@@ -6,12 +6,10 @@ from app.schemas.user import UserCreate, UserUpdate
 from app.models.notification import NotificationModel
 from app.models.ai_recommendation import AIRecommendationModel
 from datetime import datetime, timedelta
-from app.utils.rabbitmq import RabbitMQConnection  # RabbitMQ integration for publishing messages
 from fastapi import HTTPException
 from app.services.usermanager import UserManager
 from app.utils.password_utils import get_password_hash 
 import logging
-from sqlalchemy.exc import IntegrityError
 from app.utils.code_generator import generate_verification_code
 from passlib.context import CryptContext
 # Set up logging

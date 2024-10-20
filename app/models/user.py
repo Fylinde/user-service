@@ -7,7 +7,7 @@ from app.models.association_tables import user_groups
 from datetime import timedelta, datetime
 from sqlalchemy import JSON
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.declarative import declarative_base
+
 import bcrypt
 
 class UserModel(BaseModel):

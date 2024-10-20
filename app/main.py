@@ -1,30 +1,25 @@
 import logging
 import threading
 import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from starlette.responses import StreamingResponse
 from app.routes import (
     user as user_router, 
     review as review_router, 
     wishlist as wishlist_router
    
 )
-from app.models import BaseModel  # Import BaseModel to ensure all models are included
-from app.database import engine
 from app.consumers.user_created_consumer import start_user_consuming
 from app.consumers.vendor_created_consumer import start_vendor_consuming
 import pika
 from app.config import settings
-from fastapi.responses import StreamingResponse
 from app.tasks.cleanup import scheduler, cleanup_expired_unverified_users  # Import the scheduler to 
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.base import SchedulerAlreadyRunningError
 from fastapi.middleware.cors import CORSMiddleware
 
 
 # Initialize the scheduler at a module level
-scheduler = BackgroundScheduler()
+#scheduler = BackgroundScheduler()
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +49,6 @@ app.include_router(wishlist_router.router, prefix="/wishlist", tags=["wishlist"]
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the User Service!"}
 
 # Define the list of allowed origins explicitly
 origins = [
@@ -77,15 +69,11 @@ app.add_middleware(
 # Start all consumers for user-service and vendor-service
 def start_all_consumers():
     try:
-        logger.info("Starting user-service consumer...")
         user_thread = threading.Thread(target=start_user_consuming)
         user_thread.start()
-        logger.info("User-service consumer started successfully.")
-
-        logger.info("Starting vendor-service consumer...")
         vendor_thread = threading.Thread(target=start_vendor_consuming)
         vendor_thread.start()
-        logger.info("Vendor-service consumer started successfully.")
+        logger.info("All consumers started successfully.")
     except Exception as e:
         logger.error(f"Error while starting consumers: {str(e)}")
 
@@ -99,8 +87,11 @@ async def startup_event():
         connection.close()
         logger.info("Successfully connected to RabbitMQ")
     except Exception as e:
+       
         logger.error(f"Failed to connect to RabbitMQ: {e}")
-
+    
+    start_all_consumers()
+    
     for route in app.router.routes:
         print(route.path, route.name)
        # Ensure the scheduler is running when the app starts
@@ -117,3 +108,7 @@ async def startup_event():
         logger.warning("Attempted to start the scheduler, but it was already running.")
     except Exception as e:
         logger.error(f"Error occurred while starting the scheduler: {e}")
+        
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the User Service!"}

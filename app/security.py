@@ -6,7 +6,6 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status, Security
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 from app.database import get_db
 from app.models.user import UserModel
 from app.config import settings

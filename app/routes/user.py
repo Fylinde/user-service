@@ -1,7 +1,6 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from datetime import timedelta, datetime
 from app.schemas.user import (
     UserCreate, 
     UserRead, 
@@ -14,18 +13,17 @@ from app.security import (
     get_current_user, 
     verify_password_reset_token
 )
-from app.utils.email_service import send_reset_email, generate_password_reset_token, send_verification_email
+from app.utils.email_service import send_reset_email, generate_password_reset_token
 from app.services.usermanager import UserManager
 from app.database import get_db
 from app.config import settings
 from app.models.user import UserModel
-from app.crud.user import verify_user_code
-from app.services.user_verification import verify_user_email
-from app.schemas.user import UserVerificationResponse, UserLogin
+from app.services.user_verification import verify_user_email_or_phone
+from app.schemas.user import  UserLogin
 from app.services.user_verification import verify_user_service, register_user_service
 from app.schemas.user import UserAuthenticateRequest, UserAuthenticateResponse
 from app.crud.user import verify_password
-from fastapi.responses import RedirectResponse
+from app.utils.rabbitmq import RabbitMQConnection
 
 
 router = APIRouter()
@@ -133,7 +131,28 @@ async def verify_code_endpoint(code: str, db: Session = Depends(get_db)):
     db.commit()
     logging.info(f"User {user.id} marked as verified.")
 
-    # Return verification status and user information back to auth-service
+    # Prepare user data for publishing
+    user_data = {
+        "id": user.id,
+        "email": user.email,
+        "phone": user.phone_number,
+        "full_name": user.full_name,
+        "is_verified": user.is_email_verified,
+    }
+
+    # Publish user data to RabbitMQ
+    try:
+        # Specify queue_name during connection creation if missing
+        rabbitmq = RabbitMQConnection(queue_name='user_verification_queue')
+        
+        # Alternatively, provide routing_key directly to publish_message method
+        rabbitmq.publish_message(user_data, routing_key='user_verification_queue')
+        logging.info(f"Published user {user.id} verification to RabbitMQ.")
+    except Exception as e:
+        logging.error(f"Failed to publish user {user.id} to RabbitMQ: {e}")
+    finally:
+        rabbitmq.close_connection()
+
     return {
         "verified": True,
         "user": {
@@ -143,10 +162,9 @@ async def verify_code_endpoint(code: str, db: Session = Depends(get_db)):
         }
     }
     
-    
 @router.post("/verify")
 def verify_user_endpoint(code: str, db: Session = Depends(get_db)):
-    return verify_user_email(code, db)
+    return verify_user_email_or_phone(code, db)
 
 
 @router.post("/login")

@@ -8,62 +8,167 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
-    # Drop foreign key constraints first
-    op.drop_constraint('reviews_product_id_fkey', 'reviews', type_='foreignkey')
-    op.drop_constraint('orders_product_id_fkey', 'orders', type_='foreignkey')
-    op.drop_constraint('wishlists_product_id_fkey', 'wishlists', type_='foreignkey')
-    
-    # Now drop the table
-    op.drop_index('ix_products_id', table_name='products')
-    op.drop_index('ix_products_name', table_name='products')
-    op.drop_table('products')
+    # Drop foreign key constraints if they exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.table_constraints 
+            WHERE constraint_name = 'reviews_product_id_fkey' 
+            AND table_name = 'reviews'
+        ) THEN
+            ALTER TABLE reviews DROP CONSTRAINT reviews_product_id_fkey;
+        END IF;
+    END $$;
+    """)
 
-    # Other upgrade commands
-    op.drop_index('ix_orders_id', table_name='orders')
-    op.drop_table('orders')
-    op.drop_index('ix_addresses_id', table_name='addresses')
-    op.drop_table('addresses')
-    
-    # Adding new columns to users
-    op.add_column('users', sa.Column('notification_preferences', sa.String(), nullable=True))
-    op.add_column('users', sa.Column('date_of_birth', sa.String(), nullable=True))
-    op.add_column('users', sa.Column('gender', sa.String(length=10), nullable=True))
-    op.add_column('users', sa.Column('is_email_verified', sa.Boolean(), nullable=True))
-    op.add_column('users', sa.Column('is_phone_verified', sa.Boolean(), nullable=True))
-    op.add_column('users', sa.Column('two_factor_enabled', sa.Boolean(), nullable=True))
-    op.add_column('users', sa.Column('two_factor_secret', sa.String(), nullable=True))
-    op.add_column('users', sa.Column('created_at', sa.DateTime(), nullable=True))
-    op.add_column('users', sa.Column('updated_at', sa.DateTime(), nullable=True))
-    op.add_column('users', sa.Column('subscription_status', sa.String(), nullable=True))
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.table_constraints 
+            WHERE constraint_name = 'orders_product_id_fkey' 
+            AND table_name = 'orders'
+        ) THEN
+            ALTER TABLE orders DROP CONSTRAINT orders_product_id_fkey;
+        END IF;
+    END $$;
+    """)
 
-    # Alter column type for preferences with explicit casting
-    op.alter_column('users', 'preferences',
-                    type_=sa.JSON(),
-                    existing_type=sa.VARCHAR(),
-                    postgresql_using="preferences::json",
-                    existing_nullable=True)
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.table_constraints 
+            WHERE constraint_name = 'wishlists_product_id_fkey' 
+            AND table_name = 'wishlists'
+        ) THEN
+            ALTER TABLE wishlists DROP CONSTRAINT wishlists_product_id_fkey;
+        END IF;
+    END $$;
+    """)
+
+    # Drop 'products' table and its indexes if they exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'products'
+        ) THEN
+            DROP INDEX IF EXISTS ix_products_id;
+            DROP INDEX IF EXISTS ix_products_name;
+            DROP TABLE products;
+        END IF;
+    END $$;
+    """)
+
+    # Drop 'orders' table and its index if they exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'orders'
+        ) THEN
+            DROP INDEX IF EXISTS ix_orders_id;
+            DROP TABLE orders;
+        END IF;
+    END $$;
+    """)
+
+    # Drop 'addresses' table and its index if they exist
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'addresses'
+        ) THEN
+            DROP INDEX IF EXISTS ix_addresses_id;
+            DROP TABLE addresses;
+        END IF;
+    END $$;
+    """)
+
+    # Add new columns to 'users' if they don't exist
+    columns_to_add = [
+        ('notification_preferences', sa.String()),
+        ('date_of_birth', sa.String()),
+        ('gender', sa.String(length=10)),
+        ('is_email_verified', sa.Boolean()),
+        ('is_phone_verified', sa.Boolean()),
+        ('two_factor_enabled', sa.Boolean()),
+        ('two_factor_secret', sa.String()),
+        ('created_at', sa.TIMESTAMP()),
+        ('updated_at', sa.TIMESTAMP()),
+        ('subscription_status', sa.String())
+    ]
+
+    for column_name, column_type in columns_to_add:
+        op.execute(f"""
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 
+                FROM information_schema.columns 
+                WHERE table_name = 'users' 
+                AND column_name = '{column_name}'
+            ) THEN
+                ALTER TABLE users ADD COLUMN {column_name} {column_type};
+            END IF;
+        END $$;
+        """)
+
+    # Alter column type for 'preferences' if it exists
+    op.execute("""
+    DO $$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_name = 'users' 
+            AND column_name = 'preferences'
+        ) THEN
+            ALTER TABLE users 
+            ALTER COLUMN preferences 
+            TYPE JSON 
+            USING preferences::json;
+        END IF;
+    END $$;
+    """)
 
 def downgrade():
-    # Recreate constraints during downgrade
-    op.create_foreign_key('reviews_product_id_fkey', 'reviews', 'products', ['product_id'], ['id'])
-    op.create_foreign_key('orders_product_id_fkey', 'orders', 'products', ['product_id'], ['id'])
-    op.create_foreign_key('wishlists_product_id_fkey', 'wishlists', 'products', ['product_id'], ['id'])
-    
-    # Recreate products table during downgrade
-    op.create_table('products',
-    sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('name', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('description', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('vendor_id', sa.INTEGER(), autoincrement=False, nullable=True),
-    sa.Column('price', sa.DOUBLE_PRECISION(precision=53), autoincrement=False, nullable=False),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], name='products_vendor_id_fkey'),
-    sa.PrimaryKeyConstraint('id', name='products_pkey')
-    )
-    op.create_index('ix_products_name', 'products', ['name'], unique=False)
-    op.create_index('ix_products_id', 'products', ['id'], unique=False)
+    # Recreate constraints during downgrade only if the table and column exist
+    # Similar logic for recreating dropped tables like 'products', 'orders', 'addresses', etc.
+    # Example for 'products' table:
 
-    # Recreate other downgraded elements
-    op.create_foreign_key('reviews_product_id_fkey', 'reviews', 'products', ['product_id'], ['id'])
-    op.create_foreign_key('wishlists_product_id_fkey', 'wishlists', 'products', ['product_id'], ['id'])
-    op.create_foreign_key('orders_product_id_fkey', 'orders', 'products', ['product_id'], ['id'])
-    # Recreate rest of downgrade logic...
+    op.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'products'
+        ) THEN
+            CREATE TABLE products (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR,
+                description VARCHAR,
+                vendor_id INTEGER REFERENCES vendors(id),
+                price DOUBLE PRECISION NOT NULL
+            );
+            CREATE INDEX ix_products_name ON products (name);
+            CREATE INDEX ix_products_id ON products (id);
+        END IF;
+    END $$;
+    """)
+
+    # Recreate the rest of the downgrade logic conditionally
+    # Ensure that each element is recreated only if it does not already exist

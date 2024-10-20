@@ -1,7 +1,6 @@
-import hashlib
-import hmac
+
 import os
-import base64
+
 import random
 
 SECRET_KEY = os.getenv("SECRET_KEY", "DbSLoIREJtu6z3CVnpTd_DdFeMMRoteCU0UjJcNreZI")  # Replace with your actual secret or use an environment variable
