@@ -22,7 +22,7 @@ class Settings:
     MAILGUN_SENDER_EMAIL: str = os.getenv("MAILGUN_SENDER_EMAIL", "ifionuf@gmail.com")
     MAILGUN_DOMAIN: str = os.getenv("MAILGUN_DOMAIN", "sandboxbc6bd08084c94220be9b418c7732ee1b.mailgun.org")
     SECURITY_PASSWORD_SALT: str = os.getenv("SECURITY_PASSWORD_SALT", "mX-rk2vC6fyBmWPncH54sbHVLv4dT0FqQE2mysbkeKM")
-    ADDRESS_SERVICE_URL = os.getenv("ADDRESS_SERVICE_URL", "http://address-service")
+    USER_SERVICE_URL = os.getenv("USER_SERVICE_URL", "http://user-service")
     GMAIL_USER: str = os.getenv("GMAIL_USER", "fylinde.marketplace@gmail.com")
     GMAIL_PASSWORD: str = os.getenv("GMAIL_PASSWORD", "mmzm fpjh opgh aozk")
     ADMIN_SECRET_KEY: str = os.getenv("ADMIN_SECRET_KEY", "7f1416bb80db4d393fecdc929ea8d0f82992ed49ecb773cb147136d3184ba70f")

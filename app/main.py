@@ -10,7 +10,6 @@ from app.routes import (
    
 )
 from app.consumers.user_created_consumer import start_user_consuming
-from app.consumers.vendor_created_consumer import start_vendor_consuming
 import pika
 from app.config import settings
 from app.tasks.cleanup import scheduler, cleanup_expired_unverified_users  # Import the scheduler to 
@@ -71,8 +70,6 @@ def start_all_consumers():
     try:
         user_thread = threading.Thread(target=start_user_consuming)
         user_thread.start()
-        vendor_thread = threading.Thread(target=start_vendor_consuming)
-        vendor_thread.start()
         logger.info("All consumers started successfully.")
     except Exception as e:
         logger.error(f"Error while starting consumers: {str(e)}")

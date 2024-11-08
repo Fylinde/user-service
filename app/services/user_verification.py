@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from app.schemas.user import UserCreate
 from app.utils.password_validation import get_password_hash
 
+
 logger = logging.getLogger(__name__)
 
 def verify_user_email_or_phone(code: str, db: Session):
@@ -43,20 +44,20 @@ def verify_user_email_or_phone(code: str, db: Session):
     return {"message": f"User {user.email or user.phone} has been verified."}
 
 
-
 def register_user_service(db: Session, user_data: UserCreate):
     existing_user = db.query(UserModel).filter(UserModel.email == user_data.email).first()
-
     if existing_user and existing_user.is_email_verified:
         raise HTTPException(status_code=400, detail="Email is already registered.")
 
-    # Generate verification code
     verification_code = generate_verification_code()
     logging.info(f"Generated verification code: {verification_code}")
 
     if existing_user:
         existing_user.verification_code = verification_code
         existing_user.verification_expiration = datetime.utcnow() + timedelta(hours=24)
+        db.commit()
+        db.refresh(existing_user)
+        user_info = existing_user
     else:
         new_user = UserModel(
             email=user_data.email,
@@ -67,12 +68,24 @@ def register_user_service(db: Session, user_data: UserCreate):
             is_email_verified=False
         )
         db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        user_info = new_user
 
-    db.commit()
     logging.info("Verification code saved to the database.")
-
-    # Send verification email after saving the code to ensure synchronization
     send_verification_email(user_data.email, verification_code)
+
+    # Return minimal user info for frontend to prompt verification
+    return {
+        "status": "success",
+        "user": {
+            "id": user_info.id,
+            "full_name": user_info.full_name,
+            "email": user_info.email,
+            "is_email_verified": user_info.is_email_verified
+        }
+    }
+
 
 
 def verify_user_service(db: Session, code: str):
