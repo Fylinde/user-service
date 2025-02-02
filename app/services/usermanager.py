@@ -14,13 +14,13 @@ import pyotp
 class UserManager:
 
     @staticmethod
-    def create_user(session: Session, email: str, phone_number: str, full_name: str, password: str, is_admin=False, **extra_fields):
+    def create_user(session: Session, email: str, phoneNumber: str, full_name: str, password: str, is_admin=False, **extra_fields):
         """Create a new regular user."""
         # Hash the password and create user entry
         hashed_password = get_password_hash(password)  # Make sure password is pre-processed if needed
         user = UserModel(
             email=email,
-            phone_number=phone_number,
+            phoneNumber=phoneNumber,
             full_name=full_name,
             hashed_password=hashed_password,
             jwt_token_key=str(uuid4().hex),  # Generate unique JWT key
@@ -35,12 +35,12 @@ class UserManager:
 
 
     @staticmethod
-    def create_admin(session: Session, email: str, phone_number: str, full_name: str, password: str, **extra_fields):
+    def create_admin(session: Session, email: str, phoneNumber: str, full_name: str, password: str, **extra_fields):
         """Create a new admin user."""
         return UserManager.create_user(
             session=session, 
             email=email, 
-            phone_number=phone_number,
+            phoneNumber=phoneNumber,
             full_name=full_name,
             password=password, 
             is_admin=True, 
@@ -60,7 +60,7 @@ class UserManager:
         session.commit()
 
     @staticmethod
-    def get_user_by_id(session: Session, user_id: int):
+    def get_user_by_id(session: Session, user_id: str):
         """Get a user by ID."""
         user = session.query(UserModel).filter(UserModel.id == user_id).first()
         if not user:
@@ -92,7 +92,7 @@ class UserManager:
     # --- Additional functionality for notifications ---
     
     @staticmethod
-    def create_notification(session: Session, user_id: int, message: str):
+    def create_notification(session: Session, user_id: str, message: str):
         """Create a notification for a user."""
         notification = NotificationModel(
             user_id=user_id,
@@ -106,18 +106,18 @@ class UserManager:
         return notification
 
     @staticmethod
-    def get_notifications_by_user(session: Session, user_id: int):
+    def get_notifications_by_user(session: Session, user_id: str):
         """Get all notifications for a user."""
         return session.query(NotificationModel).filter(NotificationModel.user_id == user_id).all()
 
     # --- Additional functionality for AI Recommendations ---
 
     @staticmethod
-    def create_ai_recommendation(session: Session, user_id: int, vendor_id: int, recommendation_data: dict, recommendation_type: str):
+    def create_ai_recommendation(session: Session, user_id: str, sellerId: str, recommendation_data: dict, recommendation_type: str):
         """Create an AI recommendation for a user."""
         recommendation = AIRecommendationModel(
             user_id=user_id,
-            vendor_id=vendor_id,
+            sellerId=sellerId,
             recommendation_data=recommendation_data,
             recommendation_type=recommendation_type,
             date_created=datetime.utcnow()
@@ -128,7 +128,7 @@ class UserManager:
         return recommendation
 
     @staticmethod
-    def get_ai_recommendations_by_user(session: Session, user_id: int):
+    def get_ai_recommendations_by_user(session: Session, user_id: str):
         """Get AI recommendations for a user."""
         return session.query(AIRecommendationModel).filter(AIRecommendationModel.user_id == user_id).all()
     

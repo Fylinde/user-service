@@ -8,10 +8,10 @@ from app.database import get_db
 from typing import List
 router = APIRouter()
 
-@router.get("/vendor/{vendor_id}/notifications", response_model=List[NotificationResponse])
-def get_vendor_notifications(vendor_id: int, db: Session = Depends(get_db)):
-    """Retrieve all notifications for a vendor."""
-    return notification_crud.get_notifications_by_vendor(db=db, vendor_id=vendor_id)
+@router.get("/seller/{seller_id}/notifications", response_model=List[NotificationResponse])
+def get_seller_notifications(seller_id: int, db: Session = Depends(get_db)):
+    """Retrieve all notifications for a seller."""
+    return notification_crud.get_notifications_by_seller(db=db, seller_id=seller_id)
 
 @router.post("/notifications/{notification_id}/read", response_model=NotificationResponse)
 def mark_notification_as_read(notification_id: int, db: Session = Depends(get_db)):

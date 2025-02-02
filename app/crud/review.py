@@ -3,7 +3,7 @@ from sqlalchemy.future import select
 from app.models.review import ReviewModel
 from app.schemas.review import ReviewCreate
 
-def create_review(db: Session, review: ReviewCreate, user_id: int):
+def create_review(db: Session, review: ReviewCreate, user_id: str):
     db_review = ReviewModel(**review.dict(), user_id=user_id)
     db.add(db_review)
     db.commit()

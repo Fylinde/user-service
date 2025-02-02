@@ -95,7 +95,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     try:
         # Check if the user already exists (by email or phone number)
         existing_user = db.query(UserModel).filter(
-            (UserModel.email == user.email) | (UserModel.phone_number == user.phone_number)
+            (UserModel.email == user.email) | (UserModel.phoneNumber == user.phoneNumber)
         ).first()
 
         if existing_user:
@@ -106,7 +106,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         new_user = UserManager.create_user(
             session=db, 
             email=user.email, 
-            phone_number=user.phone_number,
+            phoneNumber=user.phoneNumber,
             full_name=user.full_name,
             password=user.password  # UserManager will handle hashing
         )
@@ -148,7 +148,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
             "id": new_user.id,
             "full_name": new_user.full_name,
             "email": new_user.email,
-            "phone_number": new_user.phone_number,
+            "phoneNumber": new_user.phoneNumber,
             "is_active": new_user.is_active,
             "is_admin": new_user.is_admin,
             "two_factor_enabled": new_user.two_factor_enabled,
@@ -215,7 +215,7 @@ def login(
 
     # Fetch the user by email or phone number
     user = db.query(UserModel).filter(
-        (UserModel.email == login_identifier) | (UserModel.phone_number == login_identifier)
+        (UserModel.email == login_identifier) | (UserModel.phoneNumber == login_identifier)
     ).first()
 
     if not user or not UserManager.check_password(user, password):
@@ -258,7 +258,7 @@ def login(
             "id": user.id,
             "full_name": user.full_name,
             "email": user.email,
-            "phone_number": user.phone_number,
+            "phoneNumber": user.phoneNumber,
             "is_admin": user.is_admin,
         }
     }
@@ -494,12 +494,12 @@ def get_user_id_from_token(token: str, db: Session):
 @router.post("/send-otp")
 async def send_otp(
     email: str = Form(None),
-    phone_number: str = Form(None),
+    phoneNumber: str = Form(None),
     carrier_gateway: str = Form(None),
     db: Session = Depends(get_db),
     token: str = Depends(oauth2_scheme)
 ):
-    if not email and not phone_number:
+    if not email and not phoneNumber:
         raise HTTPException(status_code=400, detail="Email or phone number must be provided")
 
     otp = generate_otp()
@@ -513,8 +513,8 @@ async def send_otp(
             raise HTTPException(status_code=404, detail="User not found")
         send_otp_via_email(email, otp)
 
-    if phone_number and carrier_gateway:
-        send_sms_via_email(phone_number, otp, carrier_gateway)
+    if phoneNumber and carrier_gateway:
+        send_sms_via_email(phoneNumber, otp, carrier_gateway)
 
     user = db.query(UserModel).filter(UserModel.id == user_id).first()
     user.otp_code = otp

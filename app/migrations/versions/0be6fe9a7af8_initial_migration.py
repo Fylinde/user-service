@@ -35,7 +35,7 @@ def upgrade():
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('username')
     )
-    op.create_table('vendors',
+    op.create_table('sellers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
@@ -54,12 +54,12 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('product_id', sa.Integer(), nullable=True),
-    sa.Column('vendor_id', sa.Integer(), nullable=True),
+    sa.Column('seller_id', sa.Integer(), nullable=True),
     sa.Column('rating', sa.Integer(), nullable=True),
     sa.Column('comment', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendors.id'], ),
+    sa.ForeignKeyConstraint(['seller_id'], ['sellers.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('wishlists',
@@ -78,7 +78,7 @@ def downgrade():
     op.drop_table('wishlists')
     op.drop_table('reviews')
     op.drop_table('orders')
-    op.drop_table('vendors')
+    op.drop_table('sellers')
     op.drop_table('users')
     op.drop_table('products')
     # ### end Alembic commands ###

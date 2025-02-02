@@ -161,7 +161,7 @@ def downgrade():
                 id SERIAL PRIMARY KEY,
                 name VARCHAR,
                 description VARCHAR,
-                vendor_id INTEGER REFERENCES vendors(id),
+                seller_id INTEGER REFERENCES sellers(id),
                 price DOUBLE PRECISION NOT NULL
             );
             CREATE INDEX ix_products_name ON products (name);

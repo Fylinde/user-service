@@ -7,5 +7,5 @@ def create_user_data(db: Session, user_data: UserDataModel):
     db.refresh(user_data)
     return user_data
 
-def get_user_data(db: Session, user_id: int):
+def get_user_data(db: Session, user_id: str):
     return db.query(UserDataModel).filter(UserDataModel.user_id == user_id).first()

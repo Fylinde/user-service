@@ -1,4 +1,4 @@
-"""Add review relationship to VendorModel
+"""Add review relationship to SellerModel
 
 Revision ID: bee46c8490d0
 Revises: 2828836248b3
@@ -20,13 +20,13 @@ def upgrade():
     conn = op.get_bind()
     inspector = inspect(conn)
     
-    # Check if the 'vendor_id' column already exists
-    if 'vendor_id' not in [col['name'] for col in inspector.get_columns('products')]:
+    # Check if the 'seller_id' column already exists
+    if 'seller_id' not in [col['name'] for col in inspector.get_columns('products')]:
         with op.batch_alter_table('products') as batch_op:
-            batch_op.add_column(sa.Column('vendor_id', sa.Integer(), nullable=True))
-            batch_op.create_foreign_key('fk_vendor', 'vendors', ['vendor_id'], ['id'])
+            batch_op.add_column(sa.Column('seller_id', sa.Integer(), nullable=True))
+            batch_op.create_foreign_key('fk_seller', 'sellers', ['seller_id'], ['id'])
 
 def downgrade():
     with op.batch_alter_table('products') as batch_op:
-        batch_op.drop_constraint('fk_vendor', type_='foreignkey')
-        batch_op.drop_column('vendor_id')
+        batch_op.drop_constraint('fk_seller', type_='foreignkey')
+        batch_op.drop_column('seller_id')

@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from app.crud import notification as notification_crud
 import logging
 
-def generate_ai_recommendations_for_vendor(db_session: Session, vendor_id: int):
+def generate_ai_recommendations_for_seller(db_session: Session, seller_id: int):
     """
-    Generate AI-based recommendations for a vendor and notify the vendor.
+    Generate AI-based recommendations for a seller and notify the seller.
     """
     # Placeholder for AI recommendation logic. You can expand this to include
     # more advanced logic like ML models, sales analysis, etc.
@@ -18,17 +18,17 @@ def generate_ai_recommendations_for_vendor(db_session: Session, vendor_id: int):
         "recommended_warehouse": "Warehouse A"
     }
 
-    # Notify vendor about the AI recommendation
-    notify_ai_recommendation(db_session, vendor_id, recommendation_type)
+    # Notify seller about the AI recommendation
+    notify_ai_recommendation(db_session, seller_id, recommendation_type)
 
-    logging.info(f"Generated AI recommendation for Vendor {vendor_id}: {recommendation_data}")
+    logging.info(f"Generated AI recommendation for seller {seller_id}: {recommendation_data}")
 
-def notify_ai_recommendation(db_session: Session, vendor_id: int, recommendation_type: str):
+def notify_ai_recommendation(db_session: Session, seller_id: int, recommendation_type: str):
     """
-    Notify the vendor about a new AI recommendation.
+    Notify the seller about a new AI recommendation.
     """
     message = f"You have a new AI recommendation: {recommendation_type}."
-    notification_crud.create_notification(db_session, message=message, vendor_id=vendor_id)
+    notification_crud.create_notification(db_session, message=message, seller_id=seller_id)
     
-    logging.info(f"AI recommendation notification sent to Vendor {vendor_id}")
+    logging.info(f"AI recommendation notification sent to seller {seller_id}")
 

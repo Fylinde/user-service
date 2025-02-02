@@ -11,13 +11,13 @@ class NotificationBase(BaseModel):
 class NotificationResponse(NotificationBase):
     id: int
     date_created: datetime
-    user_id: Optional[int]
-    vendor_id: Optional[int]
+    user_id: Optional[str]
+    sellerId: Optional[str]
 
     class Config:
         orm_mode = True
         from_attributes = True
 
 class NotificationCreate(NotificationBase):
-    user_id: int
+    user_id: str
 

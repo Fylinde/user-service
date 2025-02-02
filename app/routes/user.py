@@ -135,7 +135,7 @@ async def verify_code_endpoint(code: str, db: Session = Depends(get_db)):
     user_data = {
         "id": user.id,
         "email": user.email,
-        "phone": user.phone_number,
+        "phoneNumber": user.phoneNumber,
         "full_name": user.full_name,
         "is_verified": user.is_email_verified,
     }
@@ -171,7 +171,7 @@ def verify_user_endpoint(code: str, db: Session = Depends(get_db)):
 async def login(user_login: UserLogin, db: Session = Depends(get_db)):
     user = db.query(UserModel).filter(
         (UserModel.email == user_login.email_or_phone) | 
-        (UserModel.phone_number == user_login.email_or_phone)
+        (UserModel.phoneNumber == user_login.email_or_phone)
     ).first()
 
     if not user:
@@ -185,7 +185,7 @@ async def login(user_login: UserLogin, db: Session = Depends(get_db)):
     return {
         "id": user.id,
         "email": user.email,
-        "phone_number": user.phone_number,
+        "phoneNumber": user.phoneNumber,
         "full_name": user.full_name,
         "verified": user.is_email_verified
     }
@@ -197,7 +197,7 @@ def authenticate_user(
     db: Session = Depends(get_db)
 ):
     user = db.query(UserModel).filter(
-        (UserModel.email == data.username) | (UserModel.phone_number == data.username)
+        (UserModel.email == data.username) | (UserModel.phoneNumber == data.username)
     ).first()
     
     if not user or not verify_password(data.password, user.hashed_password):
@@ -206,14 +206,14 @@ def authenticate_user(
     # Convert id to string for the response model
     return {
         "id": str(user.id),  # Ensure the ID is returned as a string
-        "contact_info": user.email if user.email else user.phone_number,
+        "contact_info": user.email if user.email else user.phoneNumber,
     }
 
 @router.get("/get-by-contact")
 def get_user_by_contact(contact: str, db: Session = Depends(get_db)):
     # Find the user by email or phone number
     user = db.query(UserModel).filter(
-        (UserModel.email == contact) | (UserModel.phone_number == contact)
+        (UserModel.email == contact) | (UserModel.phoneNumber == contact)
     ).first()
     
     if not user:
@@ -222,6 +222,6 @@ def get_user_by_contact(contact: str, db: Session = Depends(get_db)):
     # Return necessary user information for the auth-service
     return {
         "id": str(user.id),
-        "contact_info": user.email if user.email else user.phone_number,
+        "contact_info": user.email if user.email else user.phoneNumber,
         "two_factor_enabled": user.two_factor_enabled
     }

@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from app.crud import notification as notification_crud
 import logging
 
-# Assuming you have a function to fetch the stock information and vendor details
-def update_warehouse_stock(db_session: Session, product_id: int, warehouse_id: int, new_quantity: int, vendor_id: int):
+# Assuming you have a function to fetch the stock information and seller details
+def update_warehouse_stock(db_session: Session, product_id: int, warehouse_id: int, new_quantity: int, seller_id: int):
     """
     Update stock for a given product in a specific warehouse and notify if stock is low.
     """
@@ -17,20 +17,20 @@ def update_warehouse_stock(db_session: Session, product_id: int, warehouse_id: i
         db_session.commit()
         logging.info(f"Updated stock for Product {product_id} in Warehouse {warehouse_id}")
         
-        # Check if stock is below threshold and notify vendor
+        # Check if stock is below threshold and notify seller
         if stock_item.stock < 10:  # Example threshold for "low stock"
-            notify_stock_low(db_session, product_id, warehouse_id, stock_item.stock, vendor_id)
+            notify_stock_low(db_session, product_id, warehouse_id, stock_item.stock, seller_id)
     else:
         logging.error(f"Stock item for Product {product_id} not found in Warehouse {warehouse_id}")
 
-def notify_stock_low(db_session: Session, product_id: int, warehouse_id: int, remaining_stock: int, vendor_id: int):
+def notify_stock_low(db_session: Session, product_id: int, warehouse_id: int, remaining_stock: int, seller_id: int):
     """
-    Notify the vendor when stock is running low.
+    Notify the seller when stock is running low.
     """
     message = f"Stock is running low for Product {product_id} in Warehouse {warehouse_id}. Remaining stock: {remaining_stock}."
-    notification_crud.create_notification(db_session, message=message, vendor_id=vendor_id)
+    notification_crud.create_notification(db_session, message=message, seller_id=seller_id)
     
-    logging.info(f"Stock low notification sent to vendor {vendor_id} for Product {product_id}")
+    logging.info(f"Stock low notification sent to seller {seller_id} for Product {product_id}")
 
 def get_stock_by_product_and_warehouse(db_session: Session, product_id: int, warehouse_id: int):
     """

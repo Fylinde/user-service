@@ -17,9 +17,9 @@ depends_on = None
 
 
 def upgrade():
-    # Check if the 'vendors' table already exists
-    if not op.get_bind().dialect.has_table(op.get_bind(), 'vendors'):
-        op.create_table('vendors',
+    # Check if the 'sellers' table already exists
+    if not op.get_bind().dialect.has_table(op.get_bind(), 'sellers'):
+        op.create_table('sellers',
             sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True, nullable=False),
             sa.Column('name', sa.String(), nullable=True),
         )
@@ -78,7 +78,7 @@ def upgrade():
             sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True, nullable=False),
             sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=True),
             sa.Column('product_id', sa.Integer(), sa.ForeignKey('products.id'), nullable=True),
-            sa.Column('vendor_id', sa.Integer(), sa.ForeignKey('vendors.id'), nullable=True),
+            sa.Column('seller_id', sa.Integer(), sa.ForeignKey('sellers.id'), nullable=True),
             sa.Column('rating', sa.Integer(), nullable=True),
             sa.Column('comment', sa.String(), nullable=True),
         )
@@ -92,5 +92,5 @@ def downgrade():
     op.drop_table('orders')
     op.drop_table('users')
     op.drop_table('products')
-    op.drop_table('vendors')
+    op.drop_table('sellers')
     # ### end Alembic commands ###

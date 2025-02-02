@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class WishlistBase(BaseModel):
     product_id: int
-    user_id: int
+    user_id: str
 
 class WishlistCreate(WishlistBase):
     pass

@@ -4,7 +4,7 @@ from app.models.user import UserModel
 from app.models.review import ReviewModel
 #from app.models.order import OrderModel  # Assuming there's an Order model
 from app.models.wishlist import WishlistModel  # Assuming there's a Wishlist model
-from app.models.vendor import VendorModel  # Assuming there's a Vendor model
+from app.models.seller import SellerModel  # Assuming there's a seller model
 from app.models.group import GroupModel
 #from app.models.address import AddressModel
 from app.models.customer_events import CustomerEventModel
@@ -21,7 +21,7 @@ __all__ = ["UserModel",
            "ReviewModel", 
       
            "WishlistModel", 
-           "VendorModel", 
+           "SellerModel", 
            "BaseModel", 
            "StaffNotificationRecipientModel",
            "group_permissions",

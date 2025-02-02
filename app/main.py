@@ -65,7 +65,7 @@ app.add_middleware(
 )
 
 
-# Start all consumers for user-service and vendor-service
+# Start all consumers for user-service and seller-service
 def start_all_consumers():
     try:
         user_thread = threading.Thread(target=start_user_consuming)

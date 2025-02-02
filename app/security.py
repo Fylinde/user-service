@@ -77,7 +77,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         logger.info(f"Decoded token payload: {payload}")
 
-        user_id: int = payload.get("user_id")
+        user_id: str = payload.get("user_id")
         logger.info(f"Extracted user_id from token: {user_id}")
 
         if user_id is None:

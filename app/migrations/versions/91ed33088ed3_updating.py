@@ -70,10 +70,10 @@ def upgrade():
                 street_address_2 VARCHAR(256),
                 city VARCHAR(256),
                 city_area VARCHAR(128),
-                postal_code VARCHAR(20),
+                postalCode VARCHAR(20),
                 country VARCHAR(2) NOT NULL,
                 country_area VARCHAR(128),
-                phone VARCHAR(20),
+                phoneNumber VARCHAR(20),
                 validation_skipped BOOLEAN,
                 user_id INTEGER REFERENCES users(id)
             );

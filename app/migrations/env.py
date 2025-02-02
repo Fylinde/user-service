@@ -20,7 +20,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 #from app.models.order import OrderModel  # Ensure 'Base' is correctly imported from your models
 from app.database import BaseModel
-from app.models.vendor import VendorModel
+from app.models.seller import SellerModel
 from app.models.review import ReviewModel
 from app.models.wishlist import WishlistModel
 from app.models.user import UserModel

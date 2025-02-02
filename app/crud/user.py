@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: str):
     return db.query(UserModel).filter(UserModel.id == user_id).first()
 
 def get_users(db: Session, skip: int = 0, limit: int = 10):
@@ -36,7 +36,7 @@ def update_user(db: Session, db_user: UserModel, user_update: UserUpdate):
     return db_user
 
 # New function to create a notification
-def create_notification(db: Session, user_id: int, message: str):
+def create_notification(db: Session, user_id: str, message: str):
     db_notification = NotificationModel(
         user_id=user_id,
         message=message,
@@ -49,14 +49,14 @@ def create_notification(db: Session, user_id: int, message: str):
     return db_notification
 
 # New function to get notifications for a user
-def get_notifications_by_user(db: Session, user_id: int):
+def get_notifications_by_user(db: Session, user_id: str):
     return db.query(NotificationModel).filter(NotificationModel.user_id == user_id).all()
 
 # New function to create AI recommendations for a user
-def create_ai_recommendation(db: Session, user_id: int, vendor_id: int, recommendation_data: dict, recommendation_type: str):
+def create_ai_recommendation(db: Session, user_id: str, sellerId: str, recommendation_data: dict, recommendation_type: str):
     db_recommendation = AIRecommendationModel(
         user_id=user_id,
-        vendor_id=vendor_id,
+        sellerId=sellerId,
         recommendation_data=recommendation_data,
         recommendation_type=recommendation_type,
         date_created=datetime.utcnow()
@@ -67,7 +67,7 @@ def create_ai_recommendation(db: Session, user_id: int, vendor_id: int, recommen
     return db_recommendation
 
 # Get AI recommendations for a user
-def get_ai_recommendations_by_user(db: Session, user_id: int):
+def get_ai_recommendations_by_user(db: Session, user_id: str):
     return db.query(AIRecommendationModel).filter(AIRecommendationModel.user_id == user_id).all()
 
 
@@ -78,7 +78,7 @@ def create_admin(db: Session, user: UserCreate):
         session=db,
         email=user.email,
         full_name=user.full_name,
-        phone_number=user.phone_number,
+        phoneNumber=user.phoneNumber,
         profile_picture=user.profile_picture,
         preferences=user.preferences,
         is_staff=False  # Regular users are not staff by default
@@ -96,13 +96,13 @@ def get_user_by_email(db: Session, email: str):
     return db.query(UserModel).filter(UserModel.email == email).first()
 
 
-def get_user_by_id(db: Session, user_id: int):
+def get_user_by_id(db: Session, user_id: str):
     """Retrieve a user by their ID."""
     return db.query(UserModel).filter(UserModel.id == user_id).first()
 
 
 
-def delete_user(db: Session, user_id: int):
+def delete_user(db: Session, user_id: str):
     """Delete a user by their ID."""
     db_user = db.query(UserModel).filter(UserModel.id == user_id).first()
     if db_user:

@@ -39,9 +39,9 @@ def verify_user_email_or_phone(code: str, db: Session):
 
     # Commit changes to mark the user as verified
     db.commit()
-    logger.info(f"User {user.email or user.phone} verified.")
+    logger.info(f"User {user.email or user.phoneNumber} verified.")
 
-    return {"message": f"User {user.email or user.phone} has been verified."}
+    return {"message": f"User {user.email or user.phoneNumber} has been verified."}
 
 
 def register_user_service(db: Session, user_data: UserCreate):

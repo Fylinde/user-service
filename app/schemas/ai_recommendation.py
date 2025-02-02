@@ -9,8 +9,8 @@ class AIRecommendationBase(BaseModel):
     recommendation_data: dict  # JSON containing the actual recommendation details
 
 class AIRecommendationCreate(AIRecommendationBase):
-    user_id: int
-    vendor_id: int
+    user_id: str
+    sellerId: str
 
 class AIRecommendationResponse(AIRecommendationBase):
     id: int

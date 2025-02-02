@@ -69,8 +69,8 @@ def send_otp_via_email(to_email: str, otp_code: str):
     message_body = f"Your OTP code is: {otp_code}"
     send_email(to_email, subject, message_body)
 
-def send_sms_via_email(phone_number, otp, carrier_gateway):
-    recipient_email = f"{phone_number}@{carrier_gateway}"
+def send_sms_via_email(phoneNumber, otp, carrier_gateway):
+    recipient_email = f"{phoneNumber}@{carrier_gateway}"
     subject = "Your OTP Code"
     message_body = f"Your OTP code is {otp}"
     send_email(recipient_email, subject, message_body)

@@ -15,9 +15,9 @@ class NotificationModel(BaseModel):
 
     # Relationships
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
-    vendor_id = Column(Integer, ForeignKey('vendors.id'), nullable=True)  # New field for vendor notifications
+    seller_id = Column(Integer, ForeignKey('sellers.id'), nullable=True)  # New field for seller notifications
     user = relationship("UserModel", back_populates="notifications")
-    vendor = relationship("VendorModel", back_populates="notifications")
+    seller = relationship("SellerModel", back_populates="notifications")
 
     def __repr__(self):
         return f'<Notification {self.id} - {self.message}>'

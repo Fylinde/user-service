@@ -17,8 +17,8 @@ class AIRecommendationModel(BaseModel):
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("UserModel", back_populates="ai_recommendations")
     
-    vendor_id = Column(Integer, ForeignKey("vendors.id"))
-    vendor = relationship("VendorModel", back_populates="recommendations")
+    seller_id = Column(Integer, ForeignKey("sellers.id"))
+    seller = relationship("SellerModel", back_populates="recommendations")
     
     def __repr__(self):
         return f'<AIRecommendation {self.id} - {self.recommendation_type}>'

@@ -4,13 +4,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.schemas import review as review_schema
-from app.crud import review as review_crud, vendor as vendor_crud
+from app.crud import review as review_crud, seller as seller_crud
 from app.database import get_db
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 from app.config import settings
 import logging
-from app.crud.notification import create_notification, get_notifications_by_user, get_notifications_by_vendor
+from app.crud.notification import create_notification, get_notifications_by_user, get_notifications_by_seller
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 router = APIRouter()
 
@@ -40,16 +40,16 @@ def create_review(review: review_schema.ReviewCreate, db: Session = Depends(get_
     user_id = verify_token(token)
     new_review = review_crud.create_review(db, review, user_id)
 
-    # Update the vendor's performance score after each review
-    vendor_id = review.vendor_id
+    # Update the seller's performance score after each review
+    seller_id = review.seller_id
     performance_score = calculate_performance_score(review.rating)
-    vendor_crud.update_vendor_performance_score(db, vendor_id, performance_score)
+    seller_crud.update_seller_performance_score(db, seller_id, performance_score)
 
-    # Notify vendor about the new review
+    # Notify seller about the new review
     message = f"New review for your product with rating {review.rating}."
-    create_notification(db, message=message, vendor_id=vendor_id)
+    create_notification(db, message=message, seller_id=seller_id)
 
-    logging.info(f"Notified vendor {vendor_id} about new review.")
+    logging.info(f"Notified seller {seller_id} about new review.")
     return new_review
 
 

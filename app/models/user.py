@@ -19,7 +19,7 @@ class UserModel(BaseModel):
     middle_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
     email = Column(String, unique=True, index=True, nullable=False)
-    phone_number = Column(String(20), nullable=True)
+    phoneNumber = Column(String(20), nullable=True)
     hashed_password = Column(String, nullable=False)
     profile_picture = Column(String, nullable=True)
     jwt_token_key = Column(String, nullable=True)  # <-- Add this column
